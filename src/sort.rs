@@ -1,35 +1,31 @@
-pub struct InsertionSort {
-    i: u32,
-    j: u32,
-    done: bool,
-}
-
-impl InsertionSort {
-    pub fn new() -> InsertionSort {
-        InsertionSort {
-            i: 1,
-            j: 1,
-            done: false
+pub fn insertion_sort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+    let mut history = Vec::new();
+    let mut j;
+    for i in 1..vec.len() {
+        j = i;
+        while j > 0 && vec[j-1] > vec[j] {
+            vec.swap(j-1, j);
+            history.push((j-1, j));
+            j -= 1;
         }
     }
+    history
+}
 
-    pub fn tick(&mut self, vec: &mut Vec<u32>) {
-        if self.i < vec.len() as u32 {
-            let j = self.j as usize;
-            if self.j > 0 && vec[j-1] > vec[j] {
-                vec.swap(j-1, j);
-                self.j -= 1;
-            } else {
-                self.i += 1;
-                self.j = self.i;
+pub fn selection_sort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+    let mut history = Vec::new();
+    for i in 0..vec.len() {
+        let mut min_j = i;
+        for j in i..vec.len() {
+            if vec[j] < vec[min_j] {
+                min_j = j
             }
-        } else {
-            self.done = true;
+        }
+
+        if min_j != i {
+            history.push((i, min_j));
+            vec.swap(i, min_j);
         }
     }
-
-    pub fn done(&self) -> bool {
-        self.done
-    }
+    history
 }
-

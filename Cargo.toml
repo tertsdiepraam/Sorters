@@ -23,7 +23,10 @@ features = [
     "Window",
     "Document",
     "Element",
+    "HtmlElement",
+    "HtmlButtonElement",
     "HtmlCanvasElement",
+    "HtmlSelectElement",
     "CanvasRenderingContext2d",
 ]
 
