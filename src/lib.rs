@@ -1,4 +1,5 @@
 mod sort;
+mod vecinit;
 mod vecviz;
 mod webtools;
 use std::{
@@ -50,18 +51,10 @@ pub fn main_js() -> Result<(), JsValue> {
     context.clear_rect(0.0, 0.0, canvas.width() as f64, canvas.height() as f64);
     context.set_fill_style(&JsString::from("black"));
 
-    let vv_rc = Rc::new(RefCell::new(VecViz::new(300)));
-
+    let vv_rc = Rc::new(RefCell::new(VecViz::new(300, 300)));
     {
-        let vv_rc = vv_rc.clone();
         let mut vv = vv_rc.try_borrow_mut().unwrap();
-        vv.init_random(300);
-        vv.apply_sort(match get_algorithm().as_ref() {
-            "insertion sort" => sort::insertion_sort,
-            "selection sort" => sort::selection_sort,
-            "quicksort" => sort::quicksort,
-            _ => sort::insertion_sort,
-        });
+        vv.init();
         vv.render(&canvas, &context);
     }
     {
@@ -102,7 +95,7 @@ fn set_playpause_button(vv_rc: Rc<RefCell<VecViz>>) {
 fn set_restart_button(vv_rc: Rc<RefCell<VecViz>>) {
     let a = Closure::wrap(Box::new(move || {
         let mut vv = vv_rc.try_borrow_mut().unwrap();
-        vv.restart();
+        vv.init();
     }) as Box<dyn FnMut()>);
     get_restart_button().set_onclick(Some(a.as_ref().unchecked_ref()));
     a.forget();

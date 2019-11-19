@@ -45,6 +45,15 @@ pub fn get_algorithm() -> String {
         .value()
 }
 
+pub fn get_initialization() -> String {
+    get_element_by_id("initialization")
+        .unwrap()
+        .dyn_into::<HtmlSelectElement>()
+        .map_err(|_| ())
+        .unwrap()
+        .value()
+}
+
 pub fn get_restart_button() -> HtmlButtonElement {
     get_element_by_id("restart")
         .unwrap()

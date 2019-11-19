@@ -7,8 +7,10 @@ use web_sys::{
 };
 use crate::webtools::{
     get_algorithm,
+    get_initialization,
 };
 use crate::sort;
+use crate::vecinit;
 
 pub struct VecViz {
     start_vec: Vec<u32>,
@@ -17,12 +19,13 @@ pub struct VecViz {
     end_vec: Vec<u32>,
     history: Vec<(usize, usize)>,
     max: u32,
+    len: u32,
     pub running: bool,
     pub done: bool,
 }
 
 impl VecViz {
-    pub fn new(max: u32) -> VecViz {
+    pub fn new(max: u32, len: u32) -> VecViz {
         VecViz {
             start_vec: Vec::new(),
             current_vec: Vec::new(),
@@ -30,17 +33,31 @@ impl VecViz {
             end_vec: Vec::new(),
             history: Vec::new(),
             max: max,
+            len: len,
             running: true,
             done: false,
         }
     }
 
-    pub fn init_random(&mut self, n: usize) {
+    pub fn init(&mut self) {
         self.start_vec.clear();
-        for _ in 0..n {
-            self.start_vec.push((Math::random()*(self.max as f64)) as u32);
-        }
+        self.start_vec = match get_initialization().as_ref() {
+            "random" => vecinit::random,
+            "shuffled" => vecinit::shuffled,
+            "ascending" => vecinit::ascending,
+            "descending" => vecinit::descending,
+            _ => vecinit::shuffled,
+        }(self.max, self.len);
         self.clear_history();
+        self.apply_sort(match get_algorithm().as_ref() {
+            "insertion sort" => sort::insertion_sort,
+            "selection sort" => sort::selection_sort,
+            "quicksort" => sort::quicksort,
+            _ => sort::insertion_sort,
+        });
+        self.current_step = 0;
+        self.done = false;
+        self.running = true;
     }
 
     pub fn clear_history(&mut self) {
@@ -76,18 +93,5 @@ impl VecViz {
 
     pub fn playpause(&mut self) {
         self.running = !self.running;
-    }
-
-    pub fn restart(&mut self) {
-        self.init_random(self.start_vec.len());
-        self.apply_sort(match get_algorithm().as_ref() {
-            "insertion sort" => sort::insertion_sort,
-            "selection sort" => sort::selection_sort,
-            "quicksort" => sort::quicksort,
-            _ => sort::insertion_sort,
-        });
-        self.current_step = 0;
-        self.done = false;
-        self.running = true;
     }
 }
