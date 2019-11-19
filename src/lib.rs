@@ -20,9 +20,6 @@ use js_sys::{Math, JsString};
 use std::convert::TryInto;
 mod sort;
 
-#[macro_use]
-extern crate lazy_static;
-
 #[cfg(feature = "wee_alloc")]
 #[global_allocator]
 static ALLOC: wee_alloc::WeeAlloc = wee_alloc::WeeAlloc::INIT;
@@ -134,9 +131,11 @@ impl VecViz {
         self.apply_sort(match get_algorithm().as_ref() {
             "insertion sort" => sort::insertion_sort,
             "selection sort" => sort::selection_sort,
+            "quicksort" => sort::quicksort,
             _ => sort::insertion_sort,
         });
         self.current_step = 0;
+        self.done = false;
     }
 }
 
@@ -172,6 +171,7 @@ pub fn main_js() -> Result<(), JsValue> {
         vv.apply_sort(match get_algorithm().as_ref() {
             "insertion sort" => sort::insertion_sort,
             "selection sort" => sort::selection_sort,
+            "quicksort" => sort::quicksort,
             _ => sort::insertion_sort,
         });
         vv.render(&canvas, &context);
@@ -192,12 +192,12 @@ pub fn main_js() -> Result<(), JsValue> {
         let vv_rc = vv_rc.clone();
         *g.borrow_mut() = Some(Closure::wrap(Box::new(move || {
             let mut vv = vv_rc.try_borrow_mut().unwrap();
-            context.clear_rect(0.0, 0.0, canvas.width() as f64, canvas.height() as f64);
-            vv.tick();
-            vv.render(&canvas, &context);
             if !vv.done {
-                request_animation_frame(f.borrow().as_ref().unwrap())
+                context.clear_rect(0.0, 0.0, canvas.width() as f64, canvas.height() as f64);
+                vv.tick();
+                vv.render(&canvas, &context);
             }
+            request_animation_frame(f.borrow().as_ref().unwrap())
         }) as Box<dyn FnMut()>));
         request_animation_frame(g.borrow().as_ref().unwrap());
     }
