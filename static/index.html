@@ -9,17 +9,22 @@
     <div id="controls">
       <button id="playpause">Play/Pause</button>
       <button id="restart">Restart</button>
+      <p>Algorithm</p>
       <select id="algorithm">
         <option value="insertion sort">Insertion Sort</option>
         <option value="selection sort">Selection Sort</option>
         <option value="quicksort">Quicksort</option>
+        <option value="bubble sort">Bubble Sort</option>
       </select>
+      <p>Initialization method</p>
       <select id="initialization">
         <option value="random">Random</option>
         <option value="shuffled">Shuffled</option>
         <option value="ascending">Ascending</option>
         <option value="descending">Descending</option>
       </select>
+      <p>Number of elements</p>
+      <input id="elements" type="number" min="1" max="1000" value="300">
     </div>
     <canvas id="canvas"></canvas>
     <script src="index.js"></script>

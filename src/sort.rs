@@ -65,3 +65,16 @@ pub fn quicksort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
     quicksort_(vec, 0, vec.len()-1, &mut history);
     history
 }
+
+pub fn bubble_sort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+    let mut history = Vec::new();
+    for j in (0..vec.len()).rev() {
+        for i in 0..j {
+            if vec[i] > vec[i+1] {
+                vec.swap(i, i+1);
+                history.push((i, i+1));
+            }
+        }
+    }
+    history
+}

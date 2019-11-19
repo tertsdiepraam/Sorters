@@ -8,6 +8,7 @@ use web_sys::{
 use crate::webtools::{
     get_algorithm,
     get_initialization,
+    get_number_of_elements,
 };
 use crate::sort;
 use crate::vecinit;
@@ -41,6 +42,8 @@ impl VecViz {
 
     pub fn init(&mut self) {
         self.start_vec.clear();
+        self.len = get_number_of_elements();
+        self.max = self.len;
         self.start_vec = match get_initialization().as_ref() {
             "random" => vecinit::random,
             "shuffled" => vecinit::shuffled,
@@ -53,6 +56,7 @@ impl VecViz {
             "insertion sort" => sort::insertion_sort,
             "selection sort" => sort::selection_sort,
             "quicksort" => sort::quicksort,
+            "bubble sort" => sort::bubble_sort,
             _ => sort::insertion_sort,
         });
         self.current_step = 0;
@@ -72,13 +76,14 @@ impl VecViz {
     }
 
     pub fn tick(&mut self) {
-        let (i, j) = self.history[self.current_step];
-        self.current_vec.swap(i,j);
-        self.current_step += 1;
         if self.current_step == self.history.len() {
             self.done = true;
             self.running = false;
+            return;
         }
+        let (i, j) = self.history[self.current_step];
+        self.current_vec.swap(i,j);
+        self.current_step += 1;
     }
 
     pub fn render(&self, canvas: &HtmlCanvasElement, context: &CanvasRenderingContext2d) {

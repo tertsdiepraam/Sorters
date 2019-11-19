@@ -10,6 +10,7 @@ use web_sys::{
     HtmlCanvasElement,
     HtmlSelectElement,
     HtmlButtonElement,
+    HtmlInputElement,
 };
 
 pub fn request_animation_frame(f: &Closure<dyn FnMut()>) {
@@ -67,5 +68,16 @@ pub fn get_playpause_button() -> HtmlButtonElement {
         .unwrap()
         .dyn_into::<HtmlButtonElement>()
         .map_err(|_| ())
+        .unwrap()
+}
+
+pub fn get_number_of_elements() -> u32 {
+    get_element_by_id("elements")
+        .unwrap()
+        .dyn_into::<HtmlInputElement>()
+        .map_err(|_| ())
+        .unwrap()
+        .value()
+        .parse()
         .unwrap()
 }

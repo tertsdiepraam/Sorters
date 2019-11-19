@@ -19,7 +19,6 @@ use webtools::{
     request_animation_frame,
     resize_canvas,
     get_element_by_id,
-    get_algorithm,
     get_restart_button,
     get_playpause_button,
 };
