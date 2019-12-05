@@ -21,8 +21,11 @@ body {
     column-gap: 10px;
 }
 
-#playpause, #restart {
-    grid-row-start: 1;
+#controls > p {
+    margin: 4px;
+}
+
+.span-rows {
     grid-row-end: span 2;
 }
 

@@ -1,5 +1,6 @@
 use std::{
-    convert::TryInto,  
+    convert::TryInto,
+    num::ParseIntError,
 };
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsCast;
@@ -20,7 +21,7 @@ pub fn request_animation_frame(f: &Closure<dyn FnMut()>) {
         .unwrap();
 }
 
-pub fn resize_canvas(canvas: &HtmlCanvasElement) -> () {
+pub fn resize_canvas(canvas: &HtmlCanvasElement) {
     canvas.set_width(canvas.client_width().try_into().unwrap());
     canvas.set_height(canvas.client_height().try_into().unwrap());    
 }
@@ -55,16 +56,8 @@ pub fn get_initialization() -> String {
         .value()
 }
 
-pub fn get_restart_button() -> HtmlButtonElement {
-    get_element_by_id("restart")
-        .unwrap()
-        .dyn_into::<HtmlButtonElement>()
-        .map_err(|_| ())
-        .unwrap()
-}
-
-pub fn get_playpause_button() -> HtmlButtonElement {
-    get_element_by_id("playpause")
+pub fn get_button(id: &str) -> HtmlButtonElement {
+    get_element_by_id(id)
         .unwrap()
         .dyn_into::<HtmlButtonElement>()
         .map_err(|_| ())
@@ -80,4 +73,18 @@ pub fn get_number_of_elements() -> u32 {
         .value()
         .parse()
         .unwrap()
+}
+
+pub fn get_playback_speed_input() -> HtmlInputElement {
+    get_element_by_id("speed")
+        .unwrap()
+        .dyn_into::<HtmlInputElement>()
+        .map_err(|_| ())
+        .unwrap()
+}
+
+pub fn get_playback_speed() -> Result<u32, ParseIntError> {
+    get_playback_speed_input()
+        .value()
+        .parse()
 }

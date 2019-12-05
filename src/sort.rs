@@ -1,64 +1,125 @@
-pub fn insertion_sort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+use crate::vecviz::{
+    History,
+    HistoryElement,
+};
+
+use HistoryElement::*;
+
+fn cmp(v: &Vec<u32>, h: &mut History, i: usize, j: usize) -> bool {
+    h.push(Compare(i, j));
+    v[i] > v[j]
+}
+
+pub fn insertion_sort(vec: &mut Vec<u32>) -> History {
     let mut history = Vec::new();
     let mut j;
     for i in 1..vec.len() {
         j = i;
-        while j > 0 && vec[j-1] > vec[j] {
+        while j > 0 && cmp(&vec, &mut history, j-1, j) {
             vec.swap(j-1, j);
-            history.push((j-1, j));
+            history.push(Swap(j-1, j));
             j -= 1;
+
         }
     }
     history
 }
 
-pub fn selection_sort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+pub fn selection_sort(vec: &mut Vec<u32>) -> History {
     let mut history = Vec::new();
     for i in 0..vec.len() {
         let mut min_j = i;
         for j in i..vec.len() {
-            if vec[j] < vec[min_j] {
+            if cmp(&vec, &mut history, min_j, j) {
                 min_j = j
             }
         }
 
         if min_j != i {
-            history.push((i, min_j));
+            history.push(Swap(i, min_j));
             vec.swap(i, min_j);
         }
     }
     history
 }
 
-pub fn quicksort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+pub fn gnome_sort(vec: &mut Vec<u32>) -> History {
+    let mut history = Vec::new();
+    let mut pos = 0;
+    while pos < vec.len() {
+        if pos == 0 || !cmp(&vec, &mut history, pos-1, pos) {
+            pos += 1;
+        } else {
+            vec.swap(pos, pos-1);
+            history.push(Swap(pos, pos-1));
+            pos -= 1;
+        }
+    }
+    history
+}
+
+pub fn cocktail_shaker_sort(vec: &mut Vec<u32>) -> History {
+    let mut history = Vec::new();
+    let mut swapped = true;
+    while swapped {
+        swapped = false;
+        for i in 0..vec.len()-1 {
+            if cmp(&vec, &mut history, i, i+1) {
+                vec.swap(i, i+1);
+                history.push(Swap(i, i+1));
+                swapped = true;
+            }
+        }
+        if !swapped {
+            break
+        }
+        for i in (1..vec.len()-2).rev() {
+            if cmp(&vec, &mut history, i, i+1) {
+                vec.swap(i, i+1);
+                history.push(Swap(i, i+1));
+                swapped = true;
+            }
+        }
+    }
+    history
+}
+
+pub fn quicksort(vec: &mut Vec<u32>) -> History {
     let mut history = Vec::new();
     
-    fn partition(vec: &mut Vec<u32>, lo: usize, hi: usize, history: &mut Vec<(usize, usize)>) -> usize {
-        let pivot = vec[lo + (hi - lo)/2];
-        let mut i: isize = (lo as isize) - 1;
-        let mut j: isize = (hi as isize) + 1;
+    fn partition(vec: &mut Vec<u32>, lo: usize, hi: usize, mut history: &mut History) -> usize {
+        let mut i = lo;
+        let mut j = hi;
+        let mut pivot = (lo + hi)/2;
         loop {
-            i += 1;
-            while vec[i as usize] < pivot {
+            while cmp(&vec, &mut history, pivot, i) {
                 i += 1;
             }
-            j -= 1;
-            while vec[j as usize] > pivot {
+            while cmp(&vec, &mut history, j, pivot) {
                 j -= 1;
             }
-            if i >= j {
-                return j as usize
+            if i > j {
+                return i;
             }
-            vec.swap(i as usize, j as usize);
-            history.push((i as usize, j as usize));
+            if pivot == i {
+                pivot = j;
+            } else if pivot == j {
+                pivot = i;
+            }
+            history.push(Swap(i, j));
+            vec.swap(i, j);
+            i += 1;
+            if j > 0 {
+                j -= 1;
+            }
         }
     }
 
-    fn quicksort_(vec: &mut Vec<u32>, lo: usize, hi: usize, history: &mut Vec<(usize, usize)>) {
+    fn quicksort_(vec: &mut Vec<u32>, lo: usize, hi: usize, history: &mut History) {
         if lo < hi {
             let p = partition(vec, lo, hi, history);
-            quicksort_(vec, lo, p, history);
-            quicksort_(vec, p+1, hi, history);
+            quicksort_(vec, lo, p-1, history);
+            quicksort_(vec, p, hi, history);
         }
     }
 
@@ -66,13 +127,13 @@ pub fn quicksort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
     history
 }
 
-pub fn bubble_sort(vec: &mut Vec<u32>) -> Vec<(usize, usize)> {
+pub fn bubble_sort(vec: &mut Vec<u32>) -> History {
     let mut history = Vec::new();
     for j in (0..vec.len()).rev() {
         for i in 0..j {
-            if vec[i] > vec[i+1] {
+            if cmp(&vec, &mut history, i, i+1) {
                 vec.swap(i, i+1);
-                history.push((i, i+1));
+                history.push(Swap(i, i+1));
             }
         }
     }
