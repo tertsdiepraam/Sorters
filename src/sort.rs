@@ -139,3 +139,20 @@ pub fn bubble_sort(vec: &mut Vec<u32>) -> History {
     }
     history
 }
+
+pub fn shellsort(vec: &mut Vec<u32>) -> History {
+    let mut history = Vec::new();
+    let gaps = [701, 301, 132, 57, 23, 10, 4, 1];
+    let n = vec.len();
+    for &gap in gaps.iter() {
+        for i in gap..n {
+            let mut j = i;
+            while j >= gap && cmp(&vec, &mut history, j-gap, j) {
+                vec.swap(j-gap, j);
+                history.push(Swap(j-gap, j));
+                j -= gap;
+            }
+        }
+    }
+    history
+}
