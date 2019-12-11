@@ -156,3 +156,27 @@ pub fn shellsort(vec: &mut Vec<u32>) -> History {
     }
     history
 }
+
+pub fn comb_sort(vec: &mut Vec<u32>) -> History {
+    let mut history = Vec::new();
+    let mut gap = vec.len();
+    let shrink = 1.3;
+    let mut sorted = false;
+
+    while !sorted {
+        gap = (gap as f64/shrink) as usize;
+        if gap <= 1 {
+            gap = 1;
+            sorted = true;
+        }
+
+        for i in 0..vec.len()-gap {
+            if cmp(&vec, &mut history, i, i+gap) {
+                vec.swap(i, i+gap);
+                history.push(Swap(i, i+gap));
+                sorted = false;
+            }
+        }
+    }
+    history
+}

@@ -85,6 +85,7 @@ impl VecViz {
             "gnome sort" => sort::gnome_sort,
             "cocktail shaker sort" => sort::cocktail_shaker_sort,
             "shellsort" => sort::shellsort,
+            "comb sort" => sort::comb_sort,
             _ => sort::insertion_sort,
         });
         self.current_step = 0;
